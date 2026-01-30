@@ -4,5 +4,9 @@
 # Editor-based HTTP Client requests
 /httpRequests/
 
+#environment variables
 .env
-app\__pycache__
+
+#python cache
+__pycache__/
+*.pyc
