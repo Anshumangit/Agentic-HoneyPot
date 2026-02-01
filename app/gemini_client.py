@@ -1,9 +1,12 @@
 # app/gemini_client.py
 
 import os
-from google import genai
+import google.generativeai as genai
 
-def get_client():
-    return genai.Client(
-        api_key=os.environ.get("GEMINI_API_KEY")
-    )
+
+def get_model():
+    """
+    Returns a configured Gemini GenerativeModel
+    """
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+    return genai.GenerativeModel("gemini-3-flash-preview")

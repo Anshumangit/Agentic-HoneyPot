@@ -1,17 +1,16 @@
 # app/detector.py
 
-from google.genai import types
-from app.gemini_client import get_client
+from app.gemini_client import get_model
+
 
 def detect_scam(text: str):
-    client = get_client()
+    """
+    Detect whether a message is a scam using Gemini
+    """
 
-    contents = [
-        types.Content(
-            role="user",
-            parts=[
-                types.Part.from_text(
-                    text=f"""
+    model = get_model()
+
+    prompt = f"""
 Analyze the message below and determine if it is a scam.
 
 Message:
@@ -23,15 +22,8 @@ Respond ONLY in JSON:
   "reason": "short explanation"
 }}
 """
-                )
-            ],
-        )
-    ]
 
-    response = client.models.generate_content(
-        model="gemini-3-flash-preview",
-        contents=contents
-    )
+    response = model.generate_content(prompt)
 
     try:
         text_resp = response.text
