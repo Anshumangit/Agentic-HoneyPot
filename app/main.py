@@ -25,6 +25,15 @@ app = FastAPI()
 @app.get("/")
 def health_check():
     return {"status": "ok"}
+@app.get("/honeypot")
+def honeypot_get(x_api_key: str = Header(None)):
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+    return {
+        "status": "success",
+        "message": "Honeypot endpoint reachable"
+    }
 
 
 @app.post("/honeypot")
