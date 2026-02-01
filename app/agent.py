@@ -1,7 +1,7 @@
 # app/agent.py
 
-from google.genai import types
-from app.gemini_client import get_client
+from app.gemini_client import get_model
+
 
 AGENT_PERSONA = """
 You are an Indian bank customer.
@@ -13,20 +13,19 @@ You respond like a real human.
 Keep responses short.
 """
 
-# def generate_agent_reply(history, new_message):
-def generate_agent_reply(history):    
-    client = get_client()
+
+def generate_agent_reply(history):
+    """
+    Generate a human-like reply from the agent using Gemini
+    """
+
+    model = get_model()
 
     conversation = ""
     for msg in history:
         conversation += f"{msg['sender']}: {msg['text']}\n"
 
-    contents = [
-        types.Content(
-            role="user",
-            parts=[
-                types.Part.from_text(
-                    text=f"""
+    prompt = f"""
 {AGENT_PERSONA}
 
 Conversation so far:
@@ -34,17 +33,10 @@ Conversation so far:
 
 Reply as the user.
 """
-                )
-            ],
-        )
-    ]
+
     try:
-        response = client.models.generate_content(
-                model="gemini-3-flash-preview",
-                contents=contents
-            )
+        response = model.generate_content(prompt)
+        return response.text.strip()
     except Exception as e:
         print("Gemini error:", e)
         return "Please give me a moment, I am checking this."
-
-    return response.text.strip()
