@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from app.final_response import build_final_api_response
 
 import os
-
+from typing import Optional
+from fastapi import Body
 from app.memory import add_message, get_messages, get_message_count
 from app.detector import detect_scam
 from app.agent import generate_agent_reply
@@ -27,19 +28,31 @@ def health_check():
 
 
 @app.post("/honeypot")
-def honeypot(payload: dict, x_api_key: str = Header(None)):
+def honeypot(payload: Optional[dict] = Body(None), x_api_key: str = Header(None)):
     if x_api_key != API_KEY:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
+    # ✅ GUVI endpoint tester case (no body)
+    if payload is None:
+        return {
+            "status": "success",
+            "message": "Honeypot endpoint reachable"
+        }
     session_id = payload["sessionId"]
     message = payload["message"]["text"]
+
+    if not session_id or not message:
+        return {
+            "status": "success",
+            "message": "Invalid payload format"
+        }
 
     if is_session_finalized(session_id):
         # Conversation lifecycle is over
         return {
             "status": "success",
             "scamDetected": True,
-            "message": "Conversation completed. No further action required."
+            "message": "We extracted all the details from scammer and notified you. No further action required."
         }
 
     # 1️⃣ Store scammer message

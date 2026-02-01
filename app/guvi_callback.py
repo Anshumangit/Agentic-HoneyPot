@@ -28,6 +28,9 @@ def send_final_result_to_guvi(
         },
         "agentNotes": agent_notes
     }
+    print("========== GUVI FINAL CALLBACK PAYLOAD ==========")
+    print(payload)
+    print("=================================================")
 
     try:
         response = requests.post(
@@ -35,7 +38,10 @@ def send_final_result_to_guvi(
             json=payload,
             timeout=5
         )
-        print("GUVI callback status:", response.status_code)
+        print(
+            f"[GUVI CALLBACK] status={response.status_code}, "
+            f"response_body={response.text}"
+        )
         return response.status_code
     except Exception as e:
         print("GUVI callback failed:", str(e))
