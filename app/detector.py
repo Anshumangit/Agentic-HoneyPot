@@ -1,5 +1,8 @@
 # app/detector.py
 
+import json
+import re
+
 from app.gemini_client import get_model
 
 
@@ -23,15 +26,33 @@ Respond ONLY in JSON:
 }}
 """
 
-    response = model.generate_content(prompt)
-
     try:
-        text_resp = response.text
-        start = text_resp.find("{")
-        end = text_resp.rfind("}") + 1
-        return eval(text_resp[start:end])
+        response = model.generate_content(prompt)
     except Exception:
         return {
-            "scamDetected": True,
-            "reason": "Fallback due to parsing error"
+            "scamDetected": False,
+            "reason": "Model request failed"
         }
+
+    text_resp = getattr(response, "text", "") or ""
+    json_match = re.search(r"\{.*\}", text_resp, re.DOTALL)
+    if not json_match:
+        return {
+            "scamDetected": False,
+            "reason": "Unable to parse model response"
+        }
+
+    try:
+        parsed = json.loads(json_match.group(0))
+    except json.JSONDecodeError:
+        return {
+            "scamDetected": False,
+            "reason": "Unable to parse model response"
+        }
+
+    scam_detected = bool(parsed.get("scamDetected", False))
+    reason = parsed.get("reason", "No reason provided")
+    return {
+        "scamDetected": scam_detected,
+        "reason": reason
+    }
