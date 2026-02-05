@@ -41,15 +41,15 @@
 import json
 import re
 from textwrap import dedent
-from app.gemini_client import get_model
-
+#from app.gemini_client import get_model
+from app.gemini_client import generate_content
 
 def detect_scam(text: str):
     """
     Detect whether a message is a scam using Gemini
     """
 
-    model = get_model()
+    #model = get_model()
 
     prompt = dedent(
         f"""
@@ -72,7 +72,8 @@ def detect_scam(text: str):
     ).strip()
 
     try:
-        response = model.generate_content(prompt)
+        #response = model.generate_content(prompt)
+        response = generate_content(prompt)
     except Exception:
         return {
             "scamDetected": False,
