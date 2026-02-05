@@ -269,3 +269,4 @@ def honeypot(payload: Optional[dict] = Body(None), x_api_key: str = Header(None)
         #"extractedIntelligence": extracted_intelligence,
         "conversationHistory": history if scam_detected else []
     }
+    

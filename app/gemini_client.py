@@ -11,3 +11,4 @@ def get_model():
     """
     genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
     return genai.GenerativeModel("gemini-3-flash-preview")
+    

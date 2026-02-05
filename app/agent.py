@@ -94,4 +94,3 @@ Reply as the user.
     except Exception as e:
         print("Gemini error:", e)
         return "Please give me a moment, I am checking this."
-

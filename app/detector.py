@@ -109,3 +109,4 @@ def detect_scam(text: str):
         "scamDetected": scam_detected,
         "reason": reason,
     }
+    
